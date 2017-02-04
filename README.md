@@ -18,7 +18,7 @@ Example Usecase: There is a plugin for foobar2000 (music player) which allows ur
 YoutubePlaylistToUrls uses a few external libraries embedded within the executable:
 
 * [JQuery](https://jquery.com/) - Duh.
-* [Youtube Data API v3](https://developers.google.com/youtube/v3/) - Self explanatory.
+* [Youtube Data API v3](https://developers.google.com/youtube/v3/) - Self explainatory.
 * [MaterializeCSS](http://materializecss.com/) - Needed an easy and quick css framework... this works perfect.
 
 ### Development
