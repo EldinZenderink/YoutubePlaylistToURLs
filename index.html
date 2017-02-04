@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>Playlist To URL list</title>
+</head>
+<script
+  src="https://code.jquery.com/jquery-3.1.1.js"
+  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+  crossorigin="anonymous"></script>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+<body>
+<script>
+	var output = "";
+	var counter = 0;
+	function getListId(youtubeUrl){
+		if(youtubeUrl.indexOf('list=') > -1){
+			var id = youtubeUrl.split("list=")[1];
+			return id;
+		} else if(youtubeUrl.length > 0) {
+			return youtubeUrl;
+		} else {			
+			return false;
+		}
+	}
+
+	function getUrlsFromPlaylist(youtubeUrl, outputDiv, preFormatted, nextPageToken){
+
+		var id = getListId(youtubeUrl);
+		
+		if(id != false){
+			var playlistData;
+
+			var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + id + "&key=AIzaSyAPM39Shhh89IOYT7oLzbxOQFnQgKH06fw";
+
+			if(nextPageToken != false){
+				url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + id + "&key=AIzaSyAPM39Shhh89IOYT7oLzbxOQFnQgKH06fw&pageToken=" + nextPageToken;
+			}
+
+			$.getJSON(url, function(data){
+				console.log(data);
+
+
+				if(data.items.length > 0){
+					$.each(data.items, function(key, data){
+						counter++;
+						var videoid = data.snippet.resourceId.videoId;
+						if(preFormatted){
+							output += "https://www.youtube.com/watch?v=" + videoid + " <br />";
+						} else {
+							output += "https://www.youtube.com/watch?v=" + videoid + " <br />";
+						}			
+					});
+
+					
+					if(data.pageInfo.totalResults > data.pageInfo.resultsPerPage && data.nextPageToken !== undefined){
+						getUrlsFromPlaylist(youtubeUrl, outputDiv, preFormatted, data.nextPageToken);
+					} else {
+						if(preFormatted){
+							output = "<pre>" + output + "</pre>";
+						} 
+						if(outputDiv.indexOf("#") > -1){
+							$(outputDiv).html("<p> Found Items: " + counter + " </p>" + output);
+						} else {				
+							$("#" + outputDiv).html(output); 
+						}
+					}
+
+				} else {
+					if(outputDiv.indexOf("#") > -1){
+						$(outputDiv).html("Didn't find videos in playlist, maybe you used the wrong url?");
+					} else {				
+						$("#" + outputDiv).html("Didn't find videos in playlist, maybe you used the wrong url?");
+					}
+				}				
+			}).fail(function() { 
+				if(outputDiv.indexOf("#") > -1){
+					$(outputDiv).html("Either the playlist ID you used is not a viable ID, or your url is wrong!");
+				} else {				
+					$("#" + outputDiv).html("Either the playlist ID you used is not a viable ID, or your url is wrong!");
+				}
+			});
+		} else {
+			if(outputDiv.indexOf("#") > -1){
+				$(outputDiv).html("Something went wrong with parsing the url, couldn't find the playlist id, maybe use a different url? :(");
+			} else {				
+				$("#" + outputDiv).tml("Something went wrong with parsing the url, couldn't find the playlist id, maybe use a different url? :(");
+			}
+		}
+	}
+
+	function startParsingUrl(){
+		var url = $('#youtubeurl').val();
+		var prepars = $('#preparsing').prop('checked');
+		output = "";
+		counter = 0;
+		getUrlsFromPlaylist(url, "#output", prepars, false);		
+	}
+
+
+</script>
+  <nav>
+    <div class="nav-wrapper red">
+      <a href="#" class="brand-logo center">Youtube Playlist To URL list</a>
+    </div>
+  </nav>
+  <p>
+  <div class="container">
+    <div class="row valign-wrapper"> 
+    	<div class="col s8">
+
+          	<label for="youtubeurl">Youtube Playlist URL or playlist ID (URL must contain "<i>list=</i>" tag, ID is what comes after "<i>list=</i>" till the next & character!) </label>
+    	  	<input id="youtubeurl" class="valign" type="text" />
+    	</div>
+    	<div class="col s2">
+    		<button onclick="startParsingUrl()" class="waves-effect waves-light btn valign red" style="width: 100%;">Start</button>
+    	</div>
+    	<div class="col s2">
+    		<input type="checkbox" class="filled-in valign red" id="preparsing" />
+        	<label for="preparsing">Preformatted</label>
+    	</div>
+    </div>
+    <div class="row">
+    	<div class="col s12 center" id="output"></div>
+    </div>
+  </div>
+  </p>
+</body>
+</html>
