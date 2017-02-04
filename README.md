@@ -6,7 +6,7 @@ YoutubePlaylistToUrls is a simple website for retreiving every url within a play
 Usage:
    1. Open the page [here](https://eldinzenderink.github.io/youtubeplaylisttourls/).
    2. Insert in the text box the playlist url or id.
-   3. Select if you want your list preformatted  (within <pre> tags).
+   3. Select if you want your list preformatted  (within < pre > tags).
    4. Click on start.
    5. Copy your list to wherever you want.
    6. Have fun :D.
